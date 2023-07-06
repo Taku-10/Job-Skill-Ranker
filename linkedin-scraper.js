@@ -1,12 +1,12 @@
 const puppeteer = require('puppeteer');
 
-async function scrapeLinkedInJobs(url)
+async function scrapeLinkedInJobs(jobTitles, url)
 
  {
     const browser = await puppeteer.launch();
     const page = await browser.newPage();
     await page.goto(url);
-  
+
     // Load job listings
     await page.waitForSelector('.job-search-card');
   
@@ -45,16 +45,17 @@ async function scrapeLinkedInJobs(url)
     return jobs;
 
   }
+    
+  const jobTitles = process.argv.slice(2).join(' ');
+  const searchUrl = `https://www.linkedin.com/jobs-guest/jobs/api/seeMoreJobPostings/search?keywords=${encodeURIComponent(jobTitles)}&location=United%20States&geoId=103644278&trk=public_jobs_jobs-search-bar_search-submit&position=1&pageNum=0&start=0`;
   
-const searchUrl = 'https://www.linkedin.com/jobs-guest/jobs/api/seeMoreJobPostings/search?keywords=python&location=United%20States&geoId=103644278&trk=public_jobs_jobs-search-bar_search-submit&position=1&pageNum=0&start=0';
-
-scrapeLinkedInJobs(searchUrl)
-  .then(jobs => 
-    {
-    console.log(jobs);
-    // Process the scraped job data as needed
-  })
-  .catch(error => 
-    {
-    console.error('Error:', error);
-  });
+  scrapeLinkedInJobs(jobTitles, searchUrl)
+    .then(jobs => {
+      console.log(jobs);
+      console.log(jobs.length);
+      // Process the scraped job data as needed
+    })
+    .catch(error => {
+      console.error('Error:', error);
+    });
+  
